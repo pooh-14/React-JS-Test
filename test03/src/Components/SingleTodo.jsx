@@ -7,13 +7,13 @@ const SingleTodo = () => {
   const [userData, setUserData] = useState({});
   const [todoData, setTodoData] = useState({
     subject: "",
-    description: "",
+    description: ""
   });
   const [isTodoExist, setIsTodoExist] = useState(false);
   const [todos, setTodos] = useState([]);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [currentUserEmail, setCurrentUserEmail] = useState("");
-  const [single, setSingle] = useState([]);
+  const [single, setSingle] = useState({});
   const [forEdit, setForEdit] = useState(false);
   const { id } = useParams();
   const router = useNavigate();
@@ -32,12 +32,12 @@ const SingleTodo = () => {
     } else {
       setIsTodoExist(false);
     }
-  });
+  },[]);
 
   useEffect(() => {
     if (isTodoExist) {
       if (id && todos.length) {
-        const res = todos.find((tod) => tod.id == id);
+        const res = todos.find((tod) => tod.id === id);
         setSingle(res);
       }
     }
@@ -49,7 +49,7 @@ const SingleTodo = () => {
       setIsUserLoggedIn(true);
       setCurrentUserEmail(user.email);
     }
-  });
+  },[]);
 
   function ownTodo() {
     if (isUserLoggedIn) {
@@ -74,25 +74,26 @@ const SingleTodo = () => {
 
 
   const handleChange = (event) => {
+    console.log(event.target.name)
     setTodoData({ ...todoData, [event.target.name]: event.target.value });
   };
 
-//   const handleEdit = (event) => {
-//     event.preventDefault();
-//     const allTodo = JSON.parse(localStorage.getItem("Todos"));
-//     for (let i = 0; i < allTodo.length; i++) {
-//       if (allTodo[i].id === id) {
-//         allTodo[i].subject === todos.subject;
-//         allTodo[i].description === todos.description;
-//         single[i].subject === todos.subject;
-//         single[i].description === todos.description;
+  const handleEdit = (event) => {
+    event.preventDefault();
+    const allTodo = JSON.parse(localStorage.getItem("Todos"));
+    for (let i = 0; i < allTodo.length; i++) {
+      if (allTodo[i].id === id) {
+        allTodo[i].subject = todoData.subject;
+        allTodo[i].description = todoData.description;
+        single[i].subject = todoData.subject;
+        single[i].description = todoData.description;
 
-//         localStorage.setItem("Todos", JSON.stringify(allTodo[i]));
-//         setTodoData({ subject: "", description: "" });
-//         alert("Todo edited successfully!");
-//       }
-//     }
-//   };
+        localStorage.setItem("Todos", JSON.stringify(allTodo[i]));
+        setTodoData({ subject: "", description: "" });
+        alert("Todo edited successfully!");
+      }
+    }
+  };
 
   function editOpen() {
     setForEdit(true);
@@ -105,8 +106,8 @@ const SingleTodo = () => {
   return (
     <div>
       {forEdit ? (
-        <div onMouseLeave={ editClose} style={{width:"290px", height:"260px", border:"1px solid black", margin:"auto", marginTop:"100px"}}>
-          <form >
+        <div  style={{width:"290px", height:"260px", border:"1px solid black", margin:"auto", marginTop:"100px"}}>
+          <form onSubmit={handleEdit}>
             <label>Enter SUBJECT :</label>
             <br />
             <input
@@ -125,7 +126,7 @@ const SingleTodo = () => {
               onChange={handleChange}
             />
             <br />
-            <button>Edit Todo</button>
+            <button onMouseLeave={ editClose}>Edit Todo</button>
           </form>
         </div>
       ) : null}
